@@ -1,0 +1,20 @@
+{
+  "name": "procesador-boletines-expediente",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.782.0",
+    "@aws-sdk/client-sns": "^3.782.0",
+    "@aws-sdk/client-sqs": "^3.782.0",
+    "@aws-sdk/lib-dynamodb": "^3.782.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "typescript": "^5.8.3"
+  }
+}
