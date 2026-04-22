@@ -10,7 +10,6 @@ const SQS_URL = process.env.SQS_URL;
 const DYNAMO_TABLE = process.env.DYNAMO_TABLE ?? "boletines";
 const SNS_TOPIC_ARN = process.env.SNS_TOPIC_ARN;
 const MOSTRADOR_BASE_URL = process.env.MOSTRADOR_BASE_URL ?? "http://localhost:8081";
-const HEALTH_PORT = Number(process.env.HEALTH_PORT ?? 8082);
 
 const runtime = {
   startedAt: new Date().toISOString(),
@@ -131,29 +130,6 @@ async function consumir() {
   log("INFO", "Bucle de consumo detenido");
 }
 
-const healthServer = createServer((req, res) => {
-  if (req.url !== "/health") {
-    res.writeHead(404, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ ok: false, error: "Not Found" }));
-    return;
-  }
-
-  const payload = {
-    ok: true,
-    service: "procesador",
-    uptimeSec: Math.round(process.uptime()),
-    startedAt: runtime.startedAt,
-    lastLoopAt: runtime.lastLoopAt,
-    lastProcessedAt: runtime.lastProcessedAt,
-    lastError: runtime.lastError,
-  };
-
-  res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify(payload));
-}).listen(HEALTH_PORT, () => {
-  log("INFO", "Health endpoint del procesador listo", { port: HEALTH_PORT });
-});
-
 log("INFO", "Servicio procesador listo");
 
 function shutdown(signal: string) {
@@ -162,12 +138,6 @@ function shutdown(signal: string) {
   }
   shuttingDown = true;
   log("INFO", "Recibida senal de apagado", { signal });
-
-  healthServer.close((error?: Error) => {
-    if (error) {
-      log("ERROR", "Error cerrando health server", { error: String(error.message) });
-    }
-  });
 
   setTimeout(() => {
     log("INFO", "Apagado completado");
